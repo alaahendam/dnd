@@ -4,6 +4,13 @@ import { restrictToParentElement } from "@dnd-kit/modifiers";
 import React, { useState } from "react";
 import DroppableArea from "@/components/Droppable";
 import DraggableItem from "@/components/Draggable";
+import {
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 interface Item {
   id: string;
   position: { top: number; left: number };
@@ -13,9 +20,16 @@ interface Item {
 }
 
 export default function Home() {
+  const mouseSensor = useSensor(MouseSensor);
+  const touchSensor = useSensor(TouchSensor);
+  const keyboardSensor = useSensor(KeyboardSensor);
+
+  const sensors = useSensors(mouseSensor, touchSensor, keyboardSensor);
+
   const [items, setItems] = useState<Item[]>([]);
   const [itemHight, setItemHight] = useState(5);
   const [itemWidth, setItemWidth] = useState(15);
+
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
     const newItem: Item = {
@@ -56,9 +70,9 @@ export default function Home() {
   };
 
   return (
-    <div className="flex h-full justify-between">
+    <div className="flex flex-col md:flex-row h-full justify-between">
       <form
-        className="w-1/2 h-full flex flex-col items-center justify-center gap-5"
+        className="w-full md:w-1/2 h-full flex flex-col items-center justify-center gap-5"
         onSubmit={handleAddItem}
       >
         <div className="flex gap-5">
@@ -94,11 +108,12 @@ export default function Home() {
           Add Item
         </button>
       </form>
-      <div className="w-1/2 h-full">
+      <div className="w-full md:w-1/2 h-full">
         <DndContext
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           modifiers={[restrictToParentElement]}
+          sensors={sensors}
         >
           <DroppableArea>
             {items.map((item) => (

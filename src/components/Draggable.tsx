@@ -36,4 +36,5 @@ const DraggableItem = ({ id, style, data }: DraggableItemProps) => {
     </div>
   );
 };
+
 export default DraggableItem;
